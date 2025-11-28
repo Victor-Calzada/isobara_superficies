@@ -220,31 +220,7 @@ def main(
     # Generate the index.html file that lists all notebooks and apps
     _generate_index(output_dir=output_dir, notebooks_data=notebooks_data, apps_data=apps_data, template_file=template_file)
 
-    # Create a .nojekyll file to disable Jekyll on GitHub Pages
-    _create_nojekyll_file(output_dir)
-
     logger.info(f"Build completed successfully. Output directory: {output_dir}")
-
-
-def _create_nojekyll_file(output_dir: Path) -> None:
-    """Create a .nojekyll file in the output directory.
-
-    This file tells GitHub Pages to not run the Jekyll build process, which
-    can interfere with the deployment of a static site.
-
-    Args:
-        output_dir (Path): Directory where the .nojekyll file will be created.
-
-    Returns:
-        None
-    """
-    nojekyll_path = output_dir / ".nojekyll"
-    try:
-        with open(nojekyll_path, "w") as f:
-            pass
-        logger.info(f"Successfully created {nojekyll_path}")
-    except IOError as e:
-        logger.error(f"Error creating .nojekyll file: {e}")
 
 
 if __name__ == '__main__':

@@ -53,12 +53,6 @@ def _(file_button, io, mo, pl):
 
 
 @app.cell
-def _(df_complete):
-    df_complete
-    return
-
-
-@app.cell
 def _(df_complete, outputs, pl):
     df = df_complete.group_by(["w/c", "CEM (kg/m3)"]).agg([pl.mean(col) for col in outputs])
     return (df,)

@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.17.7"
 app = marimo.App(width="medium")
 
 
@@ -43,7 +43,25 @@ def _(file_button, io, mo, pl):
         mo.md("## ⬆️ Por favor, carga un archivo Excel para comenzar el análisis.")
         mo.stop(True)
 
-    df_complete = pl.read_csv(io.BytesIO(file_button.value[0].contents), separator=";")
+    import re
+
+    file_content_bytes = file_button.value[0].contents
+
+    try:
+        sample_content = file_content_bytes[:4096].decode('utf-8')
+    except UnicodeDecodeError:
+        sample_content = file_content_bytes[:4096].decode('latin-1')
+
+    if re.search(r'\d+,\d+', sample_content):
+        decimal_sep = True
+    else:
+        decimal_sep = False
+
+    df_complete = pl.read_csv(
+        io.BytesIO(file_content_bytes),
+        separator=";",
+        decimal_comma=decimal_sep
+    )
     df_complete = df_complete.with_columns(
         pl.col("w/c").forward_fill(),
         pl.col("CEM (kg/m3)").forward_fill()
@@ -356,7 +374,7 @@ def _(df_complete, drop_cond, mo, pl, select_x_y_from_col):
     _x, _y, _val_col = select_x_y_from_col(df_complete, drop_cond.value)
     if len(_val_col) > 0:
         aux = pl.DataFrame({"CEM (kg/m3)": _x, "w/c": _y, drop_cond.value: _val_col})
-        ex_aux = mo.ui.data_editor(aux, label="Datos de la propiedad seleccionada")
+        ex_aux = mo.ui.data_editor(aux.to_pandas(), label="Datos de la propiedad seleccionada")
     else:
         ex_aux = mo.md("No hay datos para mostrar en la tabla.")
     return (ex_aux,)
@@ -432,7 +450,7 @@ def _(d3_plot, ex_aux, mo, pred_plot, resultados_ajuste, surf_plot):
     if resultados_ajuste.is_empty():
         tabla_resultados = mo.md("No se han podido generar resultados de ajuste.")
     else:
-        tabla_resultados = mo.ui.table(resultados_ajuste, page_size=20, selection=None, show_data_types=False, freeze_columns_left=["Caracteristicas"], label="Tabla de resultados del mejor ajuste por propiedad")
+        tabla_resultados = mo.ui.table(resultados_ajuste.to_pandas(), page_size=20, selection=None, show_data_types=False, freeze_columns_left=["Caracteristicas"], label="Tabla de resultados del mejor ajuste por propiedad")
 
     mo.ui.tabs({
         "Visualización del Ajuste": mo.vstack([

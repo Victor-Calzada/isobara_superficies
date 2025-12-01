@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.17.7"
+__generated_with = "0.18.1"
 app = marimo.App(width="medium")
 
 
@@ -374,7 +374,7 @@ def _(df_complete, drop_cond, mo, pl, select_x_y_from_col):
     _x, _y, _val_col = select_x_y_from_col(df_complete, drop_cond.value)
     if len(_val_col) > 0:
         aux = pl.DataFrame({"CEM (kg/m3)": _x, "w/c": _y, drop_cond.value: _val_col})
-        ex_aux = mo.ui.data_editor(aux.to_pandas(), label="Datos de la propiedad seleccionada")
+        ex_aux = mo.ui.data_editor(aux, label="Datos de la propiedad seleccionada")
     else:
         ex_aux = mo.md("No hay datos para mostrar en la tabla.")
     return (ex_aux,)
@@ -450,7 +450,7 @@ def _(d3_plot, ex_aux, mo, pred_plot, resultados_ajuste, surf_plot):
     if resultados_ajuste.is_empty():
         tabla_resultados = mo.md("No se han podido generar resultados de ajuste.")
     else:
-        tabla_resultados = mo.ui.table(resultados_ajuste.to_pandas(), page_size=20, selection=None, show_data_types=False, freeze_columns_left=["Caracteristicas"], label="Tabla de resultados del mejor ajuste por propiedad")
+        tabla_resultados = mo.ui.table(resultados_ajuste, page_size=20, selection=None, show_data_types=False, freeze_columns_left=["Caracteristicas"], label="Tabla de resultados del mejor ajuste por propiedad")
 
     mo.ui.tabs({
         "Visualización del Ajuste": mo.vstack([

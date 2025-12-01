@@ -43,7 +43,25 @@ def _(file_button, io, mo, pl):
         mo.md("## ⬆️ Por favor, carga un archivo Excel para comenzar el análisis.")
         mo.stop(True)
 
-    df_complete = pl.read_csv(io.BytesIO(file_button.value[0].contents), separator=";")
+    import re
+
+    file_content_bytes = file_button.value[0].contents
+
+    try:
+        sample_content = file_content_bytes[:4096].decode('utf-8')
+    except UnicodeDecodeError:
+        sample_content = file_content_bytes[:4096].decode('latin-1')
+
+    if re.search(r'\d+,\d+', sample_content):
+        decimal_sep = True
+    else:
+        decimal_sep = False
+
+    df_complete = pl.read_csv(
+        io.BytesIO(file_content_bytes),
+        separator=";",
+        decimal_comma=decimal_sep
+    )
     df_complete = df_complete.with_columns(
         pl.col("w/c").forward_fill(),
         pl.col("CEM (kg/m3)").forward_fill()

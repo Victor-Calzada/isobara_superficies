@@ -33,7 +33,7 @@ def _():
 @app.cell
 def _(mo):
     logo_path = mo.notebook_location() / "public" / "logo_app.jpg"
-    logo = mo.image(src=logo_path,width=500 )
+    logo = mo.image(src=str(logo_path),width=500 )
     return (logo,)
 
 

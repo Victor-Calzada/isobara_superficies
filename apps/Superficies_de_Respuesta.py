@@ -32,8 +32,15 @@ def _():
 
 @app.cell
 def _(mo):
+    logo_path = mo.notebook_location() / "public" / "logo_app.jpg"
+    logo = mo.image(src=logo_path,width=500 )
+    return (logo,)
+
+
+@app.cell
+def _(logo, mo):
     file_button = mo.ui.file(kind="button", label="Cargar archivo CSV", )
-    file_button
+    mo.hstack([file_button, logo])
     return (file_button,)
 
 
